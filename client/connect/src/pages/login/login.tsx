@@ -5,13 +5,16 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom';
+import { SIGN_IN } from '../../gqlOperations/queries';
+import { useMutation } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
 
 function Copyright(props: any) {
     return (
@@ -30,15 +33,49 @@ const theme = createTheme();
 
 export default function SignInSide() {
     const navigate = useNavigate();
+    const [signInUser, { data, error, loading }] = useMutation(SIGN_IN)
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
+        const formData = new FormData(event.currentTarget);
+        signInUser({
+            variables: {
+                user: {
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                }
+            }
         });
-        navigate('/')
     };
+
+
+    if (data && data.signInUser) {
+        localStorage.setItem("token", data.signInUser.token);
+        localStorage.setItem("id", data.signInUser.id);
+        navigate("/");
+    }
+
+
+    React.useEffect(() => {
+        localStorage.clear();
+    }, []);
+
+    if (loading) {
+        return (<div style={{ textAlign: 'center' }}>
+            Please wait...
+        </div>)
+    }
+
+    if (error?.message) {
+        return (<div style={{ textAlign: 'center' }}>
+            <div>
+                {error.message}
+            </div>
+            <div>
+                <Button onClick={() => location.reload()}>Try again</Button>
+            </div>
+        </div>)
+    }
+
 
     return (
         <ThemeProvider theme={theme}>
@@ -104,19 +141,17 @@ export default function SignInSide() {
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
-                                onClick={() => signIn}
                             >
                                 Sign In
                             </Button>
                             <Grid container>
                                 <Grid item xs>
-                                    <Link to="#" >
+                                    <Link href="#" variant="body2">
                                         Forgot password?
                                     </Link>
                                 </Grid>
-                                <br />
                                 <Grid item>
-                                    <Link to="/signUp">
+                                    <Link href="/signUp" variant="body2">
                                         {"Don't have an account? Sign Up"}
                                     </Link>
                                 </Grid>
@@ -129,3 +164,4 @@ export default function SignInSide() {
         </ThemeProvider>
     );
 }
+

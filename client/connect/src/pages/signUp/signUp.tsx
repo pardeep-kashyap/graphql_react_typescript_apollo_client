@@ -35,13 +35,13 @@ export default function SignUp() {
     };
 
     if (loading) {
-        return (<div>
+        return (<div style={{ textAlign: 'center' }}>
             Please wait...
         </div>)
     }
 
     if (error?.message) {
-        return (<div>
+        return (<div style={{ textAlign: 'center' }}>
             <div>
                 {error.message}
             </div>
@@ -145,12 +145,6 @@ export default function SignUp() {
                                 Sign In
                             </Button>
                             <Grid container>
-                                <Grid item xs>
-                                    <Link to="/forgot">
-                                        Forgot password?
-                                    </Link>
-                                </Grid>
-                                <br />
                                 <Grid item>
                                     <Link to="/signIn">
                                         {"Already have an account? SignIn"}
