@@ -1,26 +1,29 @@
 import { Box, TextField, IconButton, Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import SendIcon from '@mui/icons-material/Send';
 import io from 'socket.io-client';
 import './Messenger.css';
 import { useQuery } from "@apollo/client";
 import { GET_ALL_USER } from "../../gqlOperations/queries";
 
-const userId = '123';
-const receiverId = '456'
 const socket = io('http://localhost:5000/');
 
 const Messenger = () => {
     const { data, error, loading } =
         useQuery(GET_ALL_USER);
     const [isConnected, setIsConnected] = useState(socket.connected);
-    const [chatMessages, setMessages] = useState<any[]>([]);
+    const [chatMessages, setMessages] = useState<any>([]);
     const [receiverDetail, setReceiverDetails] = useState<any>();
     const [currentUser, setCurrentUser] = useState<any>();
 
     const valueRef = useRef<HTMLInputElement>(null)
     console.log(data)
+
+    const updateMessages = (msg: any) => {
+        const tempMessage = [...chatMessages];
+        tempMessage.push(msg);
+        setMessages(tempMessage)
+    }
     useEffect(() => {
         setCurrentUser(JSON.parse(localStorage.getItem('userData') || '{}'));
         socket.on('connect', () => {
@@ -35,7 +38,7 @@ const Messenger = () => {
         socket.on('message', (newMessage) => {
             console.log("newMessage", newMessage);
             console.log("Old Message", chatMessages);
-            // setMessages([...chatMessages, newMessage]);
+            updateMessages(newMessage)
         });
 
         return () => {
@@ -122,12 +125,12 @@ const ChatMessages = ({ messages = [], receiverDetail, currentUser }: { messages
 const UserList = ({ users = [], onClick }: { users: any[], onClick: any }) => {
     return users.length ? <div className="chat-users">
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-            {users.map((userDetail: any, key: number) => <ListItem alignItems="flex-start" onClick={() => onClick(userDetail)}>
+            {users.map((user: any, key: number) => <ListItem alignItems="flex-start" onClick={() => onClick(user)}>
                 <ListItemAvatar>
-                    <Avatar alt={userDetail.firstName} src="/static/images/avatar/1.jpg" />
+                    <Avatar alt={user.firstName} src="/static/images/avatar/1.jpg" />
                 </ListItemAvatar>
                 <ListItemText
-                    primary={userDetail.firstName + ' ' + userDetail.lastName}
+                    primary={user.firstName + ' ' + user.lastName}
                     secondary={
                         <React.Fragment>
                             <Typography
