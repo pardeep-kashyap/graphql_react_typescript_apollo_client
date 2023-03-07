@@ -31,7 +31,7 @@ type Mutation{
     signUpUser(userNew:UserInput!):User
     signInUser(userSignIn:UserSigninInput!):LoginSuccess
     createQuote(text:String!):String
-    createPost(post:Post!):String
+    createPost(post:PostInput!):String
 }
 input UserInput{
     firstName:String!,
@@ -47,11 +47,19 @@ type Token{
     token:String
 }
 type LoginSuccess{
-    token:String,
+    token:String
     id:ID!
+    firstName:String!
+    lastName:String!
+    email:String!,
 }
 type Post{
-    caption:String[],
+    caption:String,
+    image:String,
+    by:ID!
+}
+input PostInput{
+    caption:String,
     image:String,
     by:ID!
 }

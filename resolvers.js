@@ -46,13 +46,30 @@ const resolvers = {
                 }
 
                 const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-                return { token, id: user.id };
+                return { token, id: user.id, firstName: user.firstName, email: user.email, lastName: user.lastName };
             } catch (e) {
                 console.log("Error", e)
                 throw e;
             }
         },
         createQuote: async (_, { text }, context) => {
+            try {
+                console.log("context", context)
+                if (!context.userId) {
+                    throw new Error('Please Login')
+                }
+                const newQuote = new Quote({
+                    text,
+                    by: context.userId
+                })
+                await newQuote.save();
+                return 'Quote Saved Success Fully'
+            } catch (e) {
+                console.log("Error", e)
+                throw e;
+            }
+        },
+        createPost: async (_, { text }, context) => {
             try {
                 console.log("context", context)
                 if (!context.userId) {

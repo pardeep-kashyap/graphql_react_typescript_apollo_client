@@ -1,18 +1,18 @@
 import './models/Users.js';
 import './models/quotes.js';
+import './httpServer.js';
 import jwt from 'jsonwebtoken';
-
 import { ApolloServer } from 'apollo-server';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import typeDefs from './schema.js';
-import { connect } from './connect.js';
-
 import resolvers from './resolvers.js';
 import { JWT_SECRET } from './config.js';
+import { connect } from './connect.js';
 
 
 connect();
-const server = new ApolloServer({
+
+const apolloServer = new ApolloServer({
     typeDefs, resolvers, context: ({ req }) => {
         const { authorization } = req.headers;
         if (authorization) {
@@ -22,6 +22,9 @@ const server = new ApolloServer({
     }, plugins: [ApolloServerPluginLandingPageGraphQLPlayground()]
 });
 
-server.listen().then(({ url }) => {
-    console.log("Server is running at - " + url)
+
+
+apolloServer.listen().then(({ url }) => {
+    console.log("Apollo Server is running at - " + url)
 })
+

@@ -5,6 +5,14 @@ export const GET_QUOUTES_BY_USER = gql`query getQuotesByUser($by:ID!){
         text
     }, 
 }`;
+export const GET_ALL_USER = gql`query getAllUsers{
+  users{
+    id 
+    firstName
+    lastName 
+    email
+  }, 
+}`;
 
 export const CREATE_USER = gql`mutation createUser($userNew:UserInput!){
     signUpUser(userNew:$userNew){
@@ -19,7 +27,10 @@ export const CREATE_USER = gql`mutation createUser($userNew:UserInput!){
 export const SIGN_IN = gql`mutation login($user:UserSigninInput!){
   signInUser(userSignIn:$user){
     token, 
-    id
+    id,
+    firstName
+      lastName 
+      email
   }
 }`;
 

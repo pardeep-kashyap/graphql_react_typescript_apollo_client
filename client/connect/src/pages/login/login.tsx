@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SIGN_IN } from '../../gqlOperations/queries';
 import { useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
+import { useRef } from 'react';
 
 function Copyright(props: any) {
     return (
@@ -33,31 +34,32 @@ const theme = createTheme();
 
 export default function SignInSide() {
     const navigate = useNavigate();
-    const [signInUser, { data, error, loading }] = useMutation(SIGN_IN)
+    const emailRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+    const [signInUser, { data, error, loading }] = useMutation(SIGN_IN);
+
+    React.useEffect(() => {
+        localStorage.clear();
+    }, []);
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = new FormData(event.currentTarget);
         signInUser({
             variables: {
                 user: {
-                    email: formData.get('email'),
-                    password: formData.get('password'),
+                    email: emailRef?.current?.value,
+                    password: passwordRef?.current?.value,
                 }
             }
         });
     };
 
-
     if (data && data.signInUser) {
         localStorage.setItem("token", data.signInUser.token);
+        localStorage.setItem("userData", JSON.stringify(data.signInUser));
         localStorage.setItem("id", data.signInUser.id);
         navigate("/");
     }
-
-
-    React.useEffect(() => {
-        localStorage.clear();
-    }, []);
 
     if (loading) {
         return (<div style={{ textAlign: 'center' }}>
@@ -121,6 +123,7 @@ export default function SignInSide() {
                                 name="email"
                                 autoComplete="email"
                                 autoFocus
+                                inputRef={emailRef}
                             />
                             <TextField
                                 margin="normal"
@@ -131,6 +134,7 @@ export default function SignInSide() {
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
+                                inputRef={passwordRef}
                             />
                             <FormControlLabel
                                 control={<Checkbox value="remember" color="primary" />}

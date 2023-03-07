@@ -8,6 +8,9 @@ import AddNew from './pages/AddNew/AddNew'
 import Home from './pages/home/home'
 import SignInSide from './pages/login/login'
 import SignUp from './pages/signUp/signUp'
+import Messenger from './pages/Messenger/Messenger'
+import { ThemeProvider } from '@mui/material'
+import { THEME, themeOptions } from './Themes/Themesoptions'
 
 const client = new ApolloClient({
   uri: 'http://localhost:4000/',
@@ -21,17 +24,23 @@ function App() {
 
   return (
     <ApolloProvider client={client}  >
-      <BrowserRouter >
-        <Routes>
-          <Route path={"/"} element={<div className='home-page'>
-            <NavBar />
-            <Home />
-          </div>} />
-          <Route path={"/signIn"} element={<SignInSide />} />
-          <Route path={"/signUp"} element={<SignUp />} />
-          <Route path={"/new"} element={<AddNew />} />
-        </Routes>
-      </BrowserRouter>
+      <ThemeProvider theme={THEME}>
+        <BrowserRouter >
+          <Routes>
+            <Route path={"/"} element={<div className='home-page'>
+              <NavBar />
+              <Home />
+            </div>} />
+            <Route path={"/signIn"} element={<SignInSide />} />
+            <Route path={"/signUp"} element={<SignUp />} />
+            <Route path={"/new"} element={<AddNew />} />
+            <Route path={"/message"} element={<>
+              <NavBar />
+              <Messenger />
+            </>} />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </ApolloProvider>
 
   )
